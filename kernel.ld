@@ -9,7 +9,7 @@ SECTIONS {
   }
 
   .rodata : ALIGN(4) {
-    *(.rodata .rodata.*)
+    *(.rodata .rodata.*);
   }
 
   .data : ALIGN(4) {
@@ -17,6 +17,7 @@ SECTIONS {
   }
 
   .bss : ALIGN(4) {
+    __bss = .;
     *(.bss .bss.* .sbss .sbss.*);
     __bss_end = .;
   }

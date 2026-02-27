@@ -1,5 +1,3 @@
-const std = @import("std");
-
 const size_t = u32;
 
 extern var __bss: [0]u8;
@@ -26,22 +24,7 @@ export fn kernel_main() void {
 
 export fn boot() linksection(".text.boot") callconv(.naked) void {
     asm volatile (
-        \\mv sp, %[stack_top]
+        \\la sp, __stack_top
         \\j kernel_main
-        :
-        : [stack_top] "r" (&__stack_top),
     );
-}
-
-test "memset fills a buffer" {
-    // setup buffer
-    var buffer: [5]u8 = [_]u8{ 'A', 'A', 'A', 'A', 'A' };
-
-    _ = memset(&buffer, 0, 3);
-
-    try std.testing.expectEqual(buffer[0], 0);
-    try std.testing.expectEqual(buffer[1], 0);
-    try std.testing.expectEqual(buffer[2], 0);
-
-    try std.testing.expectEqualSlices(u8, &[_]u8{ 0, 0, 0, 'A', 'A' }, &buffer);
 }

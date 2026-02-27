@@ -9,7 +9,5 @@ zig build-exe kernel.zig \
   --name kernel.elf \
   -O ReleaseSafe \
 
-zig ld.lld kernel.zig --Map=kernel.map
-
 $QEMU -machine virt -bios default -nographic -serial mon:stdio --no-reboot \
   -kernel kernel.elf
