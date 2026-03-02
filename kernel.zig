@@ -16,14 +16,14 @@ fn sbi_call(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32, arg5: i32, fi
     asm volatile ("ecall"
         : [err] "={a0}" (err),
           [val] "={a1}" (val),
-        : [arg0] "={a0}" (arg0),
-          [arg1] "={a1}" (arg1),
-          [arg2] "={a2}" (arg2),
-          [arg3] "={a3}" (arg3),
-          [arg4] "={a4}" (arg4),
-          [arg5] "={a5}" (arg5),
-          [fid] "={a6}" (fid),
-          [eid] "={a7}" (eid),
+        : [arg0] "{a0}" (arg0),
+          [arg1] "{a1}" (arg1),
+          [arg2] "{a2}" (arg2),
+          [arg3] "{a3}" (arg3),
+          [arg4] "{a4}" (arg4),
+          [arg5] "{a5}" (arg5),
+          [fid] "{a6}" (fid),
+          [eid] "{a7}" (eid),
         : .{ .memory = true });
 
     return Sbiret{ .error_code = err, .value = val };
@@ -41,10 +41,21 @@ fn memset(buf: *anyopaque, c: c_char, n: usize) *anyopaque {
     return buf;
 }
 
-export fn kernel_main() void {
-    _ = memset(&__bss, 0, @intFromPtr(&__bss_end) - @intFromPtr(&__bss));
+fn putchar(ch: u8) void {
+    _ = sbi_call(ch, 0, 0, 0, 0, 0, 0, 1);
+}
 
-    while (true) {}
+export fn kernel_main() void {
+    const s: [*]const u8 = "\n\n Hello world!\n";
+
+    var i: usize = 0;
+    while (s[i] != 0) : (i += 1) {
+        putchar(s[i]);
+    }
+
+    while (true) {
+        asm volatile ("wfi");
+    }
 }
 
 export fn boot() linksection(".text.boot") callconv(.naked) void {
