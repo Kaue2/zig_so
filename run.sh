@@ -3,9 +3,9 @@ set -xue
 
 QEMU=qemu-system-riscv32
 
-zig build-exe kernel.zig \
+zig build-exe src/kernel.zig \
   -target riscv32-freestanding-none \
-  -T kernel.ld \
+  -T src/linker/kernel.ld \
   --name kernel.elf \
   -O ReleaseSafe \
 
