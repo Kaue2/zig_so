@@ -5,13 +5,23 @@ pub fn memcpy(dst: *anyopaque, src: *anyopaque, n: size_t) *anyopaque {
     var d: [*]u8 = @ptrCast(dst);
     const s: [*]u8 = @ptrCast(src);
     var i: usize = 0;
+
     while (n >= 0) : (n -= 1) {
         d[i] = s[i];
         i += 1;
     }
 }
 
-pub fn memset() *anyopaque {}
+pub fn memset(buf: *anyopaque, char: u8, n: size_t) *anyopaque {
+    var b: [*]u8 = @ptrCast(buf);
+    var i: size_t = 0;
+
+    while (i < n) : (i += 1) {
+        b[i] = char;
+    }
+
+    return buf;
+}
 
 pub fn strcpy() [*]u8 {}
 
