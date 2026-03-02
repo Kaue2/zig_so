@@ -1,6 +1,15 @@
 const sbi = @import("../console/sbi.zig");
+const size_t = u32;
 
-pub fn memcpy() *anyopaque {}
+pub fn memcpy(dst: *anyopaque, src: *anyopaque, n: size_t) *anyopaque {
+    var d: [*]u8 = @ptrCast(dst);
+    const s: [*]u8 = @ptrCast(src);
+    var i: usize = 0;
+    while (n >= 0) : (n -= 1) {
+        d[i] = s[i];
+        i += 1;
+    }
+}
 
 pub fn memset() *anyopaque {}
 
