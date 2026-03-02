@@ -1,5 +1,13 @@
 const sbi = @import("../console/sbi.zig");
 
+pub fn memcpy() *anyopaque {}
+
+pub fn memset() *anyopaque {}
+
+pub fn strcpy() [*]u8 {}
+
+pub fn strcmp() u1 {}
+
 pub fn printf(comptime string: [*]const u8, args: anytype) void {
     comptime var arg_idx = 0;
 
