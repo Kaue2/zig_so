@@ -3,11 +3,7 @@ set -xue
 
 QEMU=qemu-system-riscv32
 
-zig build-exe src/kernel.zig \
-  -target riscv32-freestanding-none \
-  -T src/linker/kernel.ld \
-  --name kernel.elf \
-  -O ReleaseSafe \
+zig build -Doptimize=ReleaseSafe
 
 $QEMU -machine virt -bios default -nographic -serial mon:stdio --no-reboot \
-  -kernel kernel.elf
+  -kernel zig-out/bin/kernel.elf
