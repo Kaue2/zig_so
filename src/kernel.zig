@@ -1,4 +1,4 @@
-const commom = @import("utils/common.zig");
+const commom = @import("common");
 const size_t = u32;
 
 extern var __bss: [0]u8;

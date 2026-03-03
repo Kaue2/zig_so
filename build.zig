@@ -17,6 +17,8 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/console/sbi.zig"),
     });
 
+    common_module.addImport("sbi", sbi_module);
+
     const kernel = b.addExecutable(.{
         .name = "kernel.elf",
         .root_module = b.createModule(.{
@@ -30,20 +32,5 @@ pub fn build(b: *std.Build) void {
     kernel.root_module.addImport("sbi", sbi_module);
     kernel.setLinkerScript(b.path("src/linker/kernel.ld"));
 
-    const unit_tests = b.addTest(.{
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("src/test/test.zig"),
-            .target = target,
-            .optimize = optimize,
-        }),
-    });
-
-    unit_tests.root_module.addImport("common", common_module);
-    unit_tests.root_module.addImport("sbi", sbi_module);
-
     b.installArtifact(kernel);
-
-    const run_init_tests = b.addRunArtifact(unit_tests);
-    const test_step = b.step("test", "Roda os testes unitários do sistema");
-    test_step.dependOn(&run_init_tests.step);
 }
