@@ -1,4 +1,4 @@
-const sbi = @import("../console/sbi.zig");
+const sbi = @import("sbi");
 const size_t = u32;
 
 pub fn memcpy(dst: *anyopaque, src: *anyopaque, n: size_t) *anyopaque {
