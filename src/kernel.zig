@@ -1,25 +1,18 @@
-const commom = @import("common");
+const common = @import("common");
 const size_t = u32;
 
 extern var __bss: [0]u8;
 extern var __bss_end: [0]u8;
 extern var __stack_top: [0]u8;
 
-fn memset(buf: *anyopaque, c: c_char, n: usize) *anyopaque {
-    var p: [*]u8 = @ptrCast(buf);
-    const value: u8 = @intCast(c);
-    var i: size_t = 0;
-
-    while (i < n) : (i += 1) {
-        p[i] = value;
-    }
-
-    return buf;
-}
-
 export fn kernel_main() void {
-    commom.printf("\n\n Hello %s\n", .{"World"});
-    commom.printf("\n\n 1 + 2 = %d \n\n", .{1 + 2});
+    common.printf("Ola %s\n", .{"mundo"});
+    var vec: [5]u8 = undefined;
+    _ = common.memset(&vec, 7, 5);
+
+    for (0..5) |i| {
+        common.printf(" %d ", .{vec[i]});
+    }
 
     while (true) {
         asm volatile ("wfi");

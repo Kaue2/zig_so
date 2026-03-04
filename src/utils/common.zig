@@ -6,10 +6,11 @@ pub fn memcpy(dst: *anyopaque, src: *anyopaque, n: size_t) *anyopaque {
     const s: [*]u8 = @ptrCast(src);
     var i: usize = 0;
 
-    while (n >= 0) : (n -= 1) {
+    while (i < n) : (i += 1) {
         d[i] = s[i];
-        i += 1;
     }
+
+    return d;
 }
 
 pub fn memset(buf: *anyopaque, char: u8, n: size_t) *anyopaque {
