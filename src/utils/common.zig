@@ -24,9 +24,26 @@ pub fn memset(buf: *anyopaque, char: u8, n: size_t) *anyopaque {
     return buf;
 }
 
-pub fn strcpy() [*]u8 {}
+pub fn strcpy(dst: [*]u8, src: [*]const u8) [*]u8 {
+    var i: size_t = 0;
 
-pub fn strcmp() u1 {}
+    while (src[i] != 0) : (i += 1) {
+        dst[i] = src[i];
+    }
+    dst[i] = 0;
+    return dst;
+}
+
+pub fn strcmp(str1: [*]const u8, str2: [*]const u8) i32 {
+    var i: size_t = 0;
+
+    while (str1[i] != 0 and str2[i] != 0) : (i += 1) {
+        if (str1[i] != str2[i])
+            break;
+    }
+
+    return str1[i] - str2[i];
+}
 
 pub fn printf(comptime string: [*]const u8, args: anytype) void {
     comptime var arg_idx = 0;
