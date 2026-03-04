@@ -95,10 +95,12 @@ pub fn printf(comptime string: [*]const u8, args: anytype) void {
                     }
                 },
                 'x' => {
-                    const value: i32 = args[arg_idx];
+                    const value: u32 = args[arg_idx];
                     arg_idx += 1;
-                    for (7..-1) |idx| {
-                        const nibble: u32 = (value >> (idx * 4)) & 0xf;
+                    var aux: usize = 8;
+                    while (aux > 0) {
+                        aux -= 1;
+                        const nibble: u32 = (value >> @intCast(aux * 4)) & 0xf;
                         const character = "0123456789abcdef"[nibble];
                         sbi.putchar(@intCast(character));
                     }
