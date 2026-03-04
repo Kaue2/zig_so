@@ -1,3 +1,4 @@
+const std = @import("std");
 const common = @import("common");
 const size_t = u32;
 
@@ -5,20 +6,27 @@ extern var __bss: [0]u8;
 extern var __bss_end: [0]u8;
 extern var __stack_top: [0]u8;
 
-export fn kernel_main() void {
-    const str1 = "string";
-    const str2 = "string";
-    const ret: i32 = common.strcmp(str1, str2);
+fn panic(comptime src: std.builtin.SourceLocation, comptime fmt: [*]const u8, args: anytype) noreturn {
+    common.printf("PANIC: %s:%d:%d: ", .{ src.file, src.line, src.column });
 
-    if (ret == 0) {
-        common.printf("As strings eram iguais\n", .{});
-    } else {
-        common.printf("As strings eram diferentes\n", .{});
-    }
+    common.printf(fmt, args);
+    common.printf("\n", .{});
 
     while (true) {
         asm volatile ("wfi");
     }
+}
+
+export fn kernel_main() void {
+    _ = common.memset(&__bss, 0, @intFromPtr(&__bss_end) - @intFromPtr(&__bss));
+
+    const src = @src();
+    panic(src, "booted!", .{});
+    common.printf("unreachable\n");
+
+    // while (true) {
+    //     asm volatile ("wfi");
+    // }
 }
 
 export fn boot() linksection(".text.boot") callconv(.naked) void {
