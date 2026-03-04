@@ -61,8 +61,13 @@ pub fn printf(comptime string: [*]const u8, args: anytype) void {
                     sbi.putchar('%');
                 },
                 's' => {
-                    const s: [*]const u8 = args[arg_idx];
+                    const arg = args[arg_idx];
                     arg_idx += 1;
+
+                    const T = @TypeOf(arg);
+                    const is_c_ptr = @typeInfo(T) == .pointer and @typeInfo(T).pointer.size == .many;
+
+                    const s: [*]const u8 = if (is_c_ptr) arg else arg.ptr;
                     var aux: usize = 0;
                     while (s[aux] != 0) : (aux += 1) {
                         sbi.putchar(s[aux]);
@@ -79,6 +84,9 @@ pub fn printf(comptime string: [*]const u8, args: anytype) void {
                     }
 
                     var divisor: u32 = 1;
+                    while (magnitude / divisor > 9)
+                        divisor *= 10;
+
                     while (divisor > 0) {
                         const character = '0' + magnitude / divisor;
                         sbi.putchar(@intCast(character));
