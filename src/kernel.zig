@@ -6,12 +6,14 @@ extern var __bss_end: [0]u8;
 extern var __stack_top: [0]u8;
 
 export fn kernel_main() void {
-    common.printf("Ola %s\n", .{"mundo"});
-    var vec: [5]u8 = undefined;
-    _ = common.memset(&vec, 7, 5);
+    const str1 = "string";
+    const str2 = "string";
+    const ret: i32 = common.strcmp(str1, str2);
 
-    for (0..5) |i| {
-        common.printf(" %d ", .{vec[i]});
+    if (ret == 0) {
+        common.printf("As strings eram iguais\n", .{});
+    } else {
+        common.printf("As strings eram diferentes\n", .{});
     }
 
     while (true) {
