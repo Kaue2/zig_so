@@ -1,9 +1,13 @@
 const std = @import("std");
 const common = @import("common");
 
-extern var __bss: [0]u8;
-extern var __bss_end: [0]u8;
-extern var __stack_top: [0]u8;
+extern var __bss: u8;
+extern var __bss_end: u8;
+extern var __stack_top: u8;
+extern var __free_ram: u8;
+extern var __free_ram_end: u8;
+
+const PAGE_SIZE: usize = 4096;
 
 const TrapFrame = packed struct {
     ra: u32,
@@ -138,6 +142,23 @@ export fn handle_trap(f: *TrapFrame) void {
     panic(src, "unexpected trap scause=%x stval=%x sepc=%x ra=%x", .{ scause, stval, user_pc, f.ra });
 }
 
+fn alloc_pages(n: u32) usize {
+    common.printf("Free ram: %x\n", .{@intFromPtr(&__free_ram)});
+    common.printf("Free ram end: %x\n", .{@intFromPtr(&__free_ram_end)});
+    var next_paddr: usize = @intFromPtr(&__free_ram);
+    var paddr: usize = next_paddr;
+    next_paddr += n * PAGE_SIZE;
+
+    if (next_paddr > @intFromPtr(&__free_ram_end)) {
+        const src = @src();
+        panic(src, "out of memory", .{});
+    }
+
+    _ = common.memset(&paddr, 0, n * PAGE_SIZE);
+
+    return paddr;
+}
+
 export fn kernel_main() void {
     _ = common.memset(&__bss, 0, @intFromPtr(&__bss_end) - @intFromPtr(&__bss));
     asm volatile ("csrw stvec, %[addr]"
@@ -145,7 +166,11 @@ export fn kernel_main() void {
         : [addr] "r" (&kernel_entry),
     );
 
-    common.printf("Hello %s\n", .{"world"});
+    const paddr0: usize = alloc_pages(2);
+    const paddr1: usize = alloc_pages(1);
+    common.printf("alloc_pages test: paddr0=%x\n", .{paddr0});
+    common.printf("alloc_pages test: paddr1=%x", .{paddr1});
+
     asm volatile ("unimp");
 
     // while (true) {
